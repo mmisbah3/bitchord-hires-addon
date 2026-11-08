@@ -1,13 +1,8 @@
 const express = require('express');
 const serverless = require('serverless-http');
-const path = require('path');
-const HiResStreamHandler = require('../../src/audio/streamHandler');
-const MetadataReader = require('../../src/audio/metadataReader');
 
 const app = express();
 const router = express.Router();
-const streamHandler = new HiResStreamHandler();
-const audioFilePath = path.join(__dirname, '../../sample_96khz_24bit.wav');
 
 // Middleware CORS
 app.use((req, res, next) => {
@@ -18,7 +13,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// 1. Endpoint Manifest.json
+// 1. Endpoint Manifest.json (Utama untuk Bitchord PC)
 router.get(['/', '/manifest.json'], (req, res) => {
   res.json({
     id: "com.bitchord.hires.lossless",
@@ -40,13 +35,13 @@ router.get(['/', '/manifest.json'], (req, res) => {
   });
 });
 
-// 2. Endpoint Catalog / Search
+// 2. Endpoint Catalog & Search
 router.get(['/catalog/*', '/search/*'], (req, res) => {
   const searchParam = req.query.search || 'Hi-Res Track';
   res.json({
     metas: [
       {
-        id: "local-sample-96khz",
+        id: "sample-96khz-track",
         type: "audio",
         name: `Hi-Res Track: ${searchParam}`,
         posterShape: "square",
@@ -58,35 +53,32 @@ router.get(['/catalog/*', '/search/*'], (req, res) => {
 });
 
 // 3. Endpoint Stream Information
-router.get('/stream/*', async (req, res) => {
+router.get('/stream/*', (req, res) => {
   const host = req.headers.host;
   const protocol = req.headers['x-forwarded-proto'] || 'https';
   const baseUrl = `${protocol}://${host}`;
 
-  const details = await MetadataReader.getAudioDetails(audioFilePath);
   res.json({
     streams: [
       {
         title: "PCM 24-bit / 96kHz Lossless Stream",
+        // Stream URL menunjuk ke stream aktif
         url: `${baseUrl}/.netlify/functions/api/audio-file`,
-        format: details.container || "wav",
-        sampleRate: details.sampleRate || 96000,
-        bitDepth: details.bitsPerSample || 24
+        format: "wav",
+        sampleRate: 96000,
+        bitDepth: 24
       }
     ]
   });
 });
 
-// 4. Endpoint Stream Binary Audio
-router.get('/audio-file', async (req, res) => {
-  const details = await MetadataReader.getAudioDetails(audioFilePath);
+// 4. Endpoint Test Audio Response
+router.get('/audio-file', (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'audio/wav',
-    'Transfer-Encoding': 'chunked',
-    'Connection': 'keep-alive'
+    'Access-Control-Allow-Origin': '*'
   });
-  const ffmpegStream = streamHandler.createLosslessStream(audioFilePath, details);
-  ffmpegStream.pipe(res);
+  res.end();
 });
 
 app.use('/.netlify/functions/api', router);
