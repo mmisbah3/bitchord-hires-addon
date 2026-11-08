@@ -1,0 +1,12 @@
+{
+  "audioSettings": {
+    "defaultSampleRate": 96000,
+    "maxSampleRate": 192000,
+    "defaultBitDepth": 24,
+    "channels": 2,
+    "pcmFormat": "s24le",
+    "highWaterMark": 1048576
+  },
+  "supportedFormats": ["flac", "wav", "alac", "aiff", "dsd"],
+  "enableBitPerfectMode": true
+}

@@ -1,0 +1,14 @@
+{
+  "name": "bitchord-hires-lossless",
+  "version": "1.0.0",
+  "description": "Add-on pemutar audio Hi-Res (24-bit/192kHz) dan Lossless untuk Bitchord",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ffmpeg-static": "^5.2.0",
+    "music-metadata": "^7.14.0",
+    "prism-media": "^1.3.5"
+  }
+}

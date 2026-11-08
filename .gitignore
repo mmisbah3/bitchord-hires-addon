@@ -1,0 +1,7 @@
+# .gitignore
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+sample_96khz_24bit.wav
