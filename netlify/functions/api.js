@@ -2,7 +2,6 @@ const express = require('express');
 const serverless = require('serverless-http');
 
 const app = express();
-// Deklarasi dan inisialisasi router Wajib di paling atas
 const router = express.Router();
 
 // Middleware CORS
@@ -36,8 +35,8 @@ router.get(['/', '/manifest.json'], (req, res) => {
   });
 });
 
-// 2. Endpoint Catalog & Search
-router.get(['/catalog/(.*)', '/search/(.*)'], (req, res) => {
+// 2. Endpoint Catalog & Search (Menggunakan RegExp murni untuk menghindari error parsing path-to-regexp)
+router.get(/^\/(catalog|search)(\/.*)?$/, (req, res) => {
   const searchParam = req.query.search || 'Hi-Res Track';
   res.json({
     metas: [
@@ -53,8 +52,8 @@ router.get(['/catalog/(.*)', '/search/(.*)'], (req, res) => {
   });
 });
 
-// 3. Endpoint Stream Information
-router.get('/stream/(.*)', (req, res) => {
+// 3. Endpoint Stream Information (Menggunakan RegExp murni)
+router.get(/^\/stream(\/.*)?$/, (req, res) => {
   const host = req.headers.host;
   const protocol = req.headers['x-forwarded-proto'] || 'https';
   const baseUrl = `${protocol}://${host}`;
